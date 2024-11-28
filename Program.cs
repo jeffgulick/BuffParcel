@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Adds session services needed for login
+builder.Services.AddSession();
+
 //Injection
 builder.Services.AddDbContext<PackageDbContext>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("BuffParcelConnection")));
@@ -14,13 +17,13 @@ builder.Services.AddDbContext<PackageDbContext>(options =>
 var app = builder.Build();
 
 // Add email service
-builder.Services.AddScoped<EmailService>();
+// builder.Services.AddScoped<EmailService>();
 
 // Seed Data
-// using (var scope = app.Services.CreateScope())
-// {
-//     SeedData.Initialize(scope.ServiceProvider);
-// }
+using (var scope = app.Services.CreateScope())
+{
+    SeedData.Initialize(scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -34,6 +37,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession(); // Use session middleware
 
 app.UseAuthorization();
 

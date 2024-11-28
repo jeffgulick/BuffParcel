@@ -116,6 +116,12 @@ public static class SeedData
             new Resident { Id = 100, FullName = "Alexina Tarbard", Email = "YOUR_WT_EMAIL", UnitNumber = 510 }
         );
 
+        //TODO seed login users
+        context.StaffLogins!.AddRange(
+            new StaffLogin { StaffUsername = "alice", StaffPassword = "alice123" },
+            new StaffLogin { StaffUsername = "bob", StaffPassword = "bob123" }
+        );
+        
         context.SaveChanges();
     }
 }

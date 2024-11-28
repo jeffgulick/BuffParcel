@@ -12,8 +12,12 @@ public class IndexModel : PageModel
         _logger = logger;
     }
 
-    public void OnGet()
+    public IActionResult  OnGet()
     {
-
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+        {
+            return RedirectToPage("/Login");
+        }
+        return Page();
     }
 }
