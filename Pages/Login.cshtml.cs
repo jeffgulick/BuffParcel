@@ -44,7 +44,7 @@ public class LoginModel : PageModel
         {
             // Set session to indicate logged in
             HttpContext.Session.SetString("IsLoggedIn", "true");
-            return RedirectToPage("/Dashboard");
+            return RedirectToPage("/Index");
         }
 
         ErrorMessage = "Invalid username or password.";

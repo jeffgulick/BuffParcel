@@ -41,6 +41,22 @@ namespace BuffParcel.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UnknownPackages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    OwnerName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    PostalService = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    DeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsReturned = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UnknownPackages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Packages",
                 columns: table => new
                 {
@@ -50,8 +66,7 @@ namespace BuffParcel.Migrations
                     PostalService = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     DeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     PickupDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsPickedUp = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsUnknown = table.Column<bool>(type: "INTEGER", nullable: false)
+                    IsPickedUp = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,6 +93,9 @@ namespace BuffParcel.Migrations
 
             migrationBuilder.DropTable(
                 name: "StaffLogins");
+
+            migrationBuilder.DropTable(
+                name: "UnknownPackages");
 
             migrationBuilder.DropTable(
                 name: "Residents");

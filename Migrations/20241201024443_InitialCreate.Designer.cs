@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuffParcel.Migrations
 {
     [DbContext(typeof(PackageDbContext))]
-    [Migration("20241128045822_InitialCreate")]
+    [Migration("20241201024443_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -30,9 +30,6 @@ namespace BuffParcel.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsPickedUp")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsUnknown")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("PickupDate")
@@ -96,6 +93,33 @@ namespace BuffParcel.Migrations
                     b.HasKey("StaffLoginID");
 
                     b.ToTable("StaffLogins");
+                });
+
+            modelBuilder.Entity("BuffParcel.Models.UnknownPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsReturned")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostalService")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UnknownPackages");
                 });
 
             modelBuilder.Entity("BuffParcel.Models.Package", b =>

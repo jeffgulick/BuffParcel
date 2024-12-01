@@ -20,6 +20,4 @@ public class Package
     public DateTime PickupDate { get; set; }
     
     public bool IsPickedUp { get; set; } = false;
-    
-    public bool IsUnknown { get; set; } = false;
 }
