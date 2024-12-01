@@ -14,11 +14,22 @@
 
     <div class="row mb-4">
         <div class="col text-center">
-            <a href="/PackageDelivery" class="btn btn-primary btn-lg mx-2">Receive a Package</a>
-            <a href="/PackageHistory" class="btn btn-info btn-lg mx-2">Package History</a>
+            <a href="/PackageDelivery" class="btn btn-primary mx-2">Receive a Package</a>
+            <a href="/PackageHistory" class="btn btn-info mx-2">Package History</a>
         </div>
     </div>
 
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search by Resident Name or Unit Number" value="@Model.SearchTerm" />
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     @if (Model.PendingDeliveries.Any())
     {
         <div class="row">
@@ -60,6 +71,24 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <ul class="pagination">
+                    <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-page-handler="Index" asp-route-pageIndex="@(Model.PageIndex - 1)" asp-route-searchTerm="@Model.SearchTerm">Previous</a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                            <a class="page-link" asp-page-handler="Index" asp-route-pageIndex="@i" asp-route-searchTerm="@Model.SearchTerm">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-page-handler="Index" asp-route-pageIndex="@(Model.PageIndex + 1)" asp-route-searchTerm="@Model.SearchTerm">Next</a>
+                    </li>
+                </ul>
             </div>
         </div>
     }

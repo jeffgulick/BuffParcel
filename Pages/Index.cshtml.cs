@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BuffParcel.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BuffParcel.Pages;
 
@@ -21,6 +18,14 @@ public class IndexModel : PageModel
 
     public List<Package> PendingDeliveries { get; set; } = new List<Package>();
 
+    [BindProperty(SupportsGet = true)]
+    public string SearchTerm { get; set; } = string.Empty;
+
+    [BindProperty(SupportsGet = true)]
+    public int PageIndex { get; set; } = 1;
+
+    public int TotalPages { get; set; }
+
     public async Task<IActionResult> OnGetAsync()
     {
         if (HttpContext.Session.GetString("IsLoggedIn") != "true")
@@ -28,11 +33,24 @@ public class IndexModel : PageModel
             return RedirectToPage("/Login");
         }
 
-        // Pulling all packages and resident info
-        PendingDeliveries = await _context.Packages!
+        var query = _context.Packages!
             .Include(p => p.Resident)
             .OrderBy(p => p.IsPickedUp)
             .ThenBy(p => p.DeliveryDate)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(SearchTerm))
+        {
+            query = query.Where(p => p.Resident!.FullName.Contains(SearchTerm) || p.Resident.UnitNumber.ToString().Contains(SearchTerm));
+        }
+
+        int pageSize = 5;
+        int totalRecords = await query.CountAsync();
+        TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+        PendingDeliveries = await query
+            .Skip((PageIndex - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
         return Page();

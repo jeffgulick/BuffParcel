@@ -1,4 +1,5 @@
 using BuffParcel.Models;
+using BuffParcel.Services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,14 +11,17 @@ builder.Services.AddRazorPages();
 // Adds session services needed for login
 builder.Services.AddSession();
 
-//Injection
+// Register services
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<PackageService>();
+builder.Services.AddScoped<ResidentService>();
+
+
+//Injection of db context
 builder.Services.AddDbContext<PackageDbContext>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("BuffParcelConnection")));
 
 var app = builder.Build();
-
-// Add email service
-// builder.Services.AddScoped<EmailService>();
 
 // Seed Data
 using (var scope = app.Services.CreateScope())

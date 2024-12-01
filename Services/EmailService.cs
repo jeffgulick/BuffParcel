@@ -2,7 +2,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 
-
+namespace BuffParcel.Services;
 public class EmailService
 {
     public void SendPackageNotification(string toEmail)
