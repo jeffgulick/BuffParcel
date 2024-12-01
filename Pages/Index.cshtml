@@ -15,7 +15,7 @@
     <div class="row mb-4">
         <div class="col text-center">
             <a href="/PackageDelivery" class="btn btn-primary btn-lg mx-2">Receive a Package</a>
-            <a href="/PackageHistory" class="btn btn-info btn-lg mx-2">View History</a>
+            <a href="/PackageHistory" class="btn btn-info btn-lg mx-2">Package History</a>
         </div>
     </div>
 
@@ -49,7 +49,10 @@
                                     <td>
                                         @if (!package.IsPickedUp)
                                         {
-                                            <a href="javascript:void(0);" onclick="pickupPackage(@package.Id)">Pick Up</a>
+                                            <form method="post" asp-page-handler="Pickup">
+                                                <input type="hidden" name="packageId" value="@package.Id" />
+                                                <button type="submit" class="btn btn-link">Pick Up</button>
+                                            </form>
                                         }
                                     </td>
                                 </tr>
@@ -69,21 +72,3 @@
         </div>
     }
 </div>
-
-@section Scripts {
-    <script>
-        function pickupPackage(packageId) {
-            $.ajax({
-                url: '@Url.Page("/Index", "Pickup")',
-                type: 'GET',
-                data: { id: packageId },
-                success: function () {
-                    location.reload(); // Reload the page on success
-                },
-                error: function () {
-                    alert('Failed to pick up the package.');
-                }
-            });
-        }
-    </script>
-}

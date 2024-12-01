@@ -22,25 +22,25 @@ public class IndexModel : PageModel
     public List<Package> PendingDeliveries { get; set; } = new List<Package>();
 
     public async Task<IActionResult> OnGetAsync()
-{
-    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
     {
-        return RedirectToPage("/Login");
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+        {
+            return RedirectToPage("/Login");
+        }
+
+        // Pulling all packages and resident info
+        PendingDeliveries = await _context.Packages!
+            .Include(p => p.Resident)
+            .OrderBy(p => p.IsPickedUp)
+            .ThenBy(p => p.DeliveryDate)
+            .ToListAsync();
+
+        return Page();
     }
 
-    // Pulling all packages and resident info
-    PendingDeliveries = await _context.Packages!
-        .Include(p => p.Resident)
-        .OrderBy(p => p.IsPickedUp)
-        .ThenBy(p => p.DeliveryDate)
-        .ToListAsync();
-
-    return Page();
-}
-
-    public async Task<IActionResult> OnGetPickupAsync(int id)
+    public async Task<IActionResult> OnPostPickupAsync(int packageId)
     {
-        var package = await _context.Packages!.FindAsync(id);
+        var package = await _context.Packages!.FindAsync(packageId);
         if (package == null)
         {
             return NotFound();
@@ -51,6 +51,6 @@ public class IndexModel : PageModel
 
         await _context.SaveChangesAsync();
 
-        return new JsonResult(new { success = true });
+        return RedirectToPage();
     }
 }
