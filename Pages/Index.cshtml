@@ -1,0 +1,74 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="display-4">Welcome to BuffParcel</h1>
+            <p class="lead">Manage your package deliveries efficiently</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col text-center">
+            <a href="/PackageDelivery" class="btn btn-primary btn-lg mx-2">Receive a Package</a>
+            <a href="/PackageHistory" class="btn btn-info btn-lg mx-2">Package History</a>
+        </div>
+    </div>
+
+    @if (Model.PendingDeliveries.Any())
+    {
+        <div class="row">
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Resident Name</th>
+                                <th>Unit Number</th>
+                                <th>Postal Service</th>
+                                <th>Delivery Date</th>
+                                <th>Status</th>
+                                <th>Pickup Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var package in Model.PendingDeliveries)
+                            {
+                                <tr id="package-@package.Id">
+                                    <td>@package.Resident!.FullName</td>
+                                    <td>@package.Resident.UnitNumber</td>
+                                    <td>@package.PostalService</td>
+                                    <td>@package.DeliveryDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@(package.IsPickedUp ? "Picked Up" : "Pending")</td>
+                                    <td>@(package.IsPickedUp ? package.PickupDate.ToString("yyyy-MM-dd") : "")</td>
+                                    <td>
+                                        @if (!package.IsPickedUp)
+                                        {
+                                            <form method="post" asp-page-handler="Pickup">
+                                                <input type="hidden" name="packageId" value="@package.Id" />
+                                                <button type="submit" class="btn btn-link">Pick Up</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col text-center">
+                <p class="alert alert-info">No pending deliveries.</p>
+            </div>
+        </div>
+    }
+</div>
