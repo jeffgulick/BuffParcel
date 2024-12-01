@@ -27,7 +27,7 @@
                             <label asp-for="SelectedResidentId" class="form-label">Resident:</label>
                             <select asp-for="SelectedResidentId" class="form-control" id="residentSelect">
                                 <option value="0">Select Resident</option>
-                                @foreach (var resident in Model.Residents)
+                                @foreach (var resident in Model.Residents!)
                                 {
                                     <option value="@resident.Id">@resident.FullName - Unit @resident.UnitNumber</option>
                                 }

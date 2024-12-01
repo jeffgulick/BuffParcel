@@ -2,14 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BuffParcel.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using BuffParcel.Services;
 
 namespace BuffParcel.Pages;
 
 public class PackageDeliveryModel : PageModel
 {
     private readonly PackageDbContext _context;
+    private readonly PackageService _packageService;
+
+    public PackageDeliveryModel(PackageDbContext context, PackageService packageService)
+    {
+        _context = context;
+        _packageService = packageService;
+    }
 
     public List<Resident>? Residents { get; set; }
 
@@ -25,11 +31,6 @@ public class PackageDeliveryModel : PageModel
     [BindProperty]
     public string OwnerName { get; set; } = string.Empty;
 
-    public PackageDeliveryModel(PackageDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IActionResult> OnGetAsync()
     {
         // Check if user is logged in
@@ -39,13 +40,12 @@ public class PackageDeliveryModel : PageModel
         }
 
         // Load residents for dropdown
-        Residents = await _context.Residents!.ToListAsync();
+        Residents = await _context.Residents!.OrderBy(r => r.FullName).ToListAsync();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        // Validate input
         if (IsUnknown)
         {
             if (string.IsNullOrEmpty(OwnerName) || string.IsNullOrEmpty(PostalService))
@@ -55,17 +55,8 @@ public class PackageDeliveryModel : PageModel
                 return Page();
             }
 
-            // Create new unknown package record
-            var unknownPackage = new UnknownPackage
-            {
-                OwnerName = OwnerName,
-                PostalService = PostalService,
-                DeliveryDate = DateTime.Now,
-                IsReturned = false
-            };
-
-            // Save unknown package to database
-            _context.UnknownPackages!.Add(unknownPackage);
+            // Use PackageService to handle unknown package
+            await _packageService.AddUnknownPackageAsync(OwnerName, PostalService);
         }
         else
         {
@@ -76,20 +67,9 @@ public class PackageDeliveryModel : PageModel
                 return Page();
             }
 
-            // Create new package record
-            var package = new Package
-            {
-                PostalService = PostalService,
-                DeliveryDate = DateTime.Now,
-                IsPickedUp = false,
-                ResidentId = SelectedResidentId
-            };
-
-            // Save package to database
-            _context.Packages!.Add(package);
+            // Use PackageService to handle known package
+            await _packageService.AddPackageAsync(SelectedResidentId, PostalService);
         }
-
-        await _context.SaveChangesAsync();
 
         return RedirectToPage("/Index");
     }
