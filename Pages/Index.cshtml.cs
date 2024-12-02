@@ -1,30 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using BuffParcel.Models;
+using BuffParcel.Services;
 
 namespace BuffParcel.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
-    private readonly PackageDbContext _context;
+    private readonly PackageService _packageService;
 
-    public IndexModel(ILogger<IndexModel> logger, PackageDbContext context)
+    public IndexModel(PackageService packageService)
     {
-        _logger = logger;
-        _context = context;
+        _packageService = packageService;
     }
 
-    public List<Package> PendingDeliveries { get; set; } = new List<Package>();
+    public int TotalPages { get; set; }
+    public List<Package>? PendingDeliveries { get; set; }
 
     [BindProperty(SupportsGet = true)]
-    public string SearchTerm { get; set; } = string.Empty;
+    public string? SearchTerm { get; set; }
 
     [BindProperty(SupportsGet = true)]
     public int PageIndex { get; set; } = 1;
-
-    public int TotalPages { get; set; }
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -33,41 +30,21 @@ public class IndexModel : PageModel
             return RedirectToPage("/Login");
         }
 
-        var query = _context.Packages!
-            .Include(p => p.Resident)
-            .OrderBy(p => p.IsPickedUp)
-            .ThenBy(p => p.DeliveryDate)
-            .AsQueryable();
-
-        if (!string.IsNullOrEmpty(SearchTerm))
-        {
-            query = query.Where(p => p.Resident!.FullName.Contains(SearchTerm) || p.Resident.UnitNumber.ToString().Contains(SearchTerm));
-        }
-
-        int pageSize = 5;
-        int totalRecords = await query.CountAsync();
-        TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
-
-        PendingDeliveries = await query
-            .Skip((PageIndex - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+        int pageSize = 10;
+        var result = await _packageService.GetPackagesAsync(SearchTerm!, PageIndex, pageSize);
+        TotalPages = result.TotalPages;
+        PendingDeliveries = result.PendingDeliveries;
 
         return Page();
     }
 
     public async Task<IActionResult> OnPostPickupAsync(int packageId)
     {
-        var package = await _context.Packages!.FindAsync(packageId);
-        if (package == null)
+        bool success = await _packageService.PickupPackageAsync(packageId);
+        if (!success)
         {
             return NotFound();
         }
-
-        package.IsPickedUp = true;
-        package.PickupDate = DateTime.Now;
-
-        await _context.SaveChangesAsync();
 
         return RedirectToPage();
     }

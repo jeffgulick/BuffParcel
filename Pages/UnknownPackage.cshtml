@@ -1,0 +1,37 @@
+﻿@page
+@model BuffParcel.Pages.UnknownPackageModel
+@{
+    ViewData["Title"] = "Unknown Packages";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center">Unknown Packages</h1>
+
+    <div class="row mt-4">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Owner Name</th>
+                            <th>Postal Service</th>
+                            <th>Delivery Date</th>
+                            <th>Is Returned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var package in Model.UnknownPackages)
+                        {
+                            <tr>
+                                <td>@package.OwnerName</td>
+                                <td>@package.PostalService</td>
+                                <td>@package.DeliveryDate.ToString("yyyy-MM-dd")</td>
+                                <td>@(package.IsReturned ? "Yes" : "No")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
