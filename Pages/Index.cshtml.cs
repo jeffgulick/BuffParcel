@@ -38,6 +38,12 @@ public class IndexModel : PageModel
         return Page();
     }
 
+    public IActionResult OnPostLogout()
+    {
+        HttpContext.Session.Clear();
+        return RedirectToPage("/Login");
+    }
+
     public async Task<IActionResult> OnPostPickupAsync(int packageId)
     {
         bool success = await _packageService.PickupPackageAsync(packageId);
