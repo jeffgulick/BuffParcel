@@ -60,7 +60,7 @@ public class PackageService
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(p => p.Resident!.FullName.Contains(searchTerm) || p.Resident.UnitNumber.ToString().Contains(searchTerm));
+            query = query.Where(p => p.Resident!.FullName.ToLower().Contains(searchTerm.ToLower()) || p.Resident.UnitNumber.ToString().Contains(searchTerm));
         }
 
         int totalRecords = await query.CountAsync();
