@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuffParcel.Migrations
 {
     [DbContext(typeof(PackageDbContext))]
-    [Migration("20241201204838_InitialCreate")]
+    [Migration("20241205030612_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

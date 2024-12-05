@@ -10,11 +10,13 @@ public class PackageDeliveryModel : PageModel
 {
     private readonly PackageDbContext _context;
     private readonly PackageService _packageService;
+    private readonly ResidentService _residentService;
 
-    public PackageDeliveryModel(PackageDbContext context, PackageService packageService)
+    public PackageDeliveryModel(PackageDbContext context, PackageService packageService, ResidentService residentService)
     {
         _context = context;
         _packageService = packageService;
+        _residentService = residentService;
     }
 
     public List<Resident>? Residents { get; set; }
@@ -55,8 +57,9 @@ public class PackageDeliveryModel : PageModel
                 return Page();
             }
 
-            // Use PackageService to handle unknown package
+            // Adding unknown package to database
             await _packageService.AddUnknownPackageAsync(OwnerName, PostalService);
+            TempData["PackageConfirmation"] = $"Unknown package for {OwnerName} was received and its status is 'Unknown Package'.";
         }
         else
         {
@@ -67,10 +70,14 @@ public class PackageDeliveryModel : PageModel
                 return Page();
             }
 
-            // Use PackageService to handle known package
+            // fetches the name of the resident based on Id
+            var residentName = await _residentService.GetResidentNameAsync(SelectedResidentId);
+
+            // Adding package to database
             await _packageService.AddPackageAsync(SelectedResidentId, PostalService);
+            TempData["PackageConfirmation"] = $"Package for resident {residentName} was received and its status is 'Pending'.";
         }
 
-        return RedirectToPage("/Index");
+        return RedirectToPage();
     }
 }

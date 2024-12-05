@@ -54,8 +54,43 @@
     </div>
 </div>
 
+@if (TempData["PackageConfirmation"] != null)
+{
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Package Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @TempData["PackageConfirmation"]
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="confirmButton">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            if (confirmationModal) {
+                confirmationModal.show();
+            }
+
+            document.getElementById('confirmButton').addEventListener('click', function () {
+                confirmationModal.hide();
+                window.location.href = '/Index';
+            });
+
+            document.getElementById('confirmationModal').addEventListener('hidden.bs.modal', function () {
+                window.location.href = '/Index';
+            });
+        });
         document.getElementById('isUnknownCheckbox').addEventListener('change', function () {
             var residentSelect = document.getElementById('residentSelect');
             var ownerNameGroup = document.getElementById('ownerNameGroup');
