@@ -49,4 +49,9 @@ BuffParcel is a web application for managing package deliveries for residents. I
 2. Log in using the provided credentials.
 3. Use the navigation links to record new package deliveries, view package history, and manage unknown packages.
 
-## Project Structure
+
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)

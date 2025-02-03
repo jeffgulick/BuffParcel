@@ -33,7 +33,7 @@ public class IndexModel : PageModel
             return RedirectToPage("/Login");
         }
 
-        int pageSize = 10;
+        int pageSize = 3;
         var result = await _packageService.GetPackagesAsync(SearchTerm!, PageIndex, pageSize);
         TotalPages = result.TotalPages;
         PendingDeliveries = result.PendingDeliveries;
